@@ -1,12 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: An example of SAM template for bedrock-stream-gateway
+Description: Haversack, a SAM template for bedrock-stream-gateway
 
 Parameters:
-  VpcId:
-    Type: "AWS::EC2::VPC::Id"
-  SubnetId:
-    Type: "AWS::EC2::Subnet::Id"
   ApiKeySecretArn:
     Type: String
     AllowedPattern: ^arn:aws:secretsmanager:.*$
@@ -15,6 +11,13 @@ Parameters:
     Type: String
     Default: anthropic.claude-3-sonnet-20240229-v1:0
     Description: The default model ID, please make sure the model ID is supported in the current region
+  DefaultEmbeddingModelId:
+    Type: String
+    Default: cohere.embed-multilingual-v3
+  EnableCrossRegionInference:
+    Type: String
+    AllowedPattern: ^(true|false)$
+    Default: "true"
 
 Resources:
   Fun:
@@ -34,8 +37,8 @@ Resources:
           DEBUG: "true"
           API_KEY_SECRET_ARN: !Ref ApiKeySecretArn
           DEFAULT_MODEL: !Ref DefaultModelId
-          DEFAULT_EMBEDDING_MODEL: cohere.embed-multilingual-v3
-          ENABLE_CROSS_REGION_INFERENCE: "true"
+          DEFAULT_EMBEDDING_MODEL: !Ref DefaultEmbeddingModelId
+          ENABLE_CROSS_REGION_INFERENCE: !Ref EnableCrossRegionInference
       FunctionUrlConfig:
         AuthType: NONE
         InvokeMode: RESPONSE_STREAM
